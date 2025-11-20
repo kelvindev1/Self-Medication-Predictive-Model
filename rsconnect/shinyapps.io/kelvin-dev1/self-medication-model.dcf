@@ -1,0 +1,10 @@
+name: self-medication-model
+title:
+username: kelvin-dev1
+account: kelvin-dev1
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16123774
+bundleId: 11206003
+url: https://kelvin-dev1.shinyapps.io/self-medication-model/
+version: 1

@@ -1,8 +1,13 @@
 library(shiny)
 library(nnet)
+library(rsconnect)
 
-# Load dataset and prepare model (same as your code)
-df <- read.csv("C:/Users/admn/OneDrive/Desktop/CUEA/CMT 429/Self-Medication.csv")
+
+# Load saved model
+drug_model <- readRDS("drug_model.rds")
+
+# Load dataset to extract factor levels for UI
+df <- read.csv("Self-Medication.csv")
 
 # Clean medicine_type into categories
 df$medicine_clean <- sapply(df$medicine_type, function(x) {
@@ -13,11 +18,9 @@ df$medicine_clean <- sapply(df$medicine_type, function(x) {
   if (length(parts) == 1) {
     return(parts[1])
   } else {
-    # Combine multiple drugs in alphabetical order
     return(paste(sort(parts), collapse = " + "))
   }
 })
-
 df$medicine_clean <- factor(df$medicine_clean)
 
 # Convert predictors to factors
@@ -30,30 +33,18 @@ for (col in factor_columns) {
   df[[col]] <- factor(df[[col]])
 }
 
-# Prepare model data
-model_data <- df[, c("medicine_clean", factor_columns)]
-model_data <- model_data[!is.na(model_data$medicine_clean), ]
-
-# Train multinomial logistic regression model
-drug_model <- multinom(
-  medicine_clean ~ age_group + gender + education + employment_status +
-    access_healthcare + consult_pharmacist + reasons_selfmed +
-    monthly_spend + frequency,
-  data = model_data
-)
-
-
 # Extract factor levels for UI
-age_options        <- levels(model_data$age_group)
-gender_options     <- levels(model_data$gender)
-education_options  <- levels(model_data$education)
-employment_options <- levels(model_data$employment_status)
-access_options     <- levels(model_data$access_healthcare)
-consult_options    <- levels(model_data$consult_pharmacist)
-reasons_options    <- levels(model_data$reasons_selfmed)
-spend_options      <- levels(model_data$monthly_spend)
-frequency_options  <- levels(model_data$frequency)
+age_options        <- levels(df$age_group)
+gender_options     <- levels(df$gender)
+education_options  <- levels(df$education)
+employment_options <- levels(df$employment_status)
+access_options     <- levels(df$access_healthcare)
+consult_options    <- levels(df$consult_pharmacist)
+reasons_options    <- levels(df$reasons_selfmed)
+spend_options      <- levels(df$monthly_spend)
+frequency_options  <- levels(df$frequency)
 
+# Shiny server
 shinyServer(function(input, output, session) {
   
   # Update UI choices dynamically
@@ -88,3 +79,23 @@ shinyServer(function(input, output, session) {
     })
   })
 })
+
+
+# To deploy incase of changes use 
+#rsconnect::deployApp(appName = "Self-Medication-Predictor")
+
+# Steps to deploy
+
+# install.packages("shiny")
+# install.packages("nnet")
+# install.packages("rsconnect")
+
+# setwd("C:/Users/admn/OneDrive/Documents/Self-Medication-Model")
+
+# rsconnect::setAccountInfo(name='kelvin-dev1', token='37A9F4436CF47A5727FC66564A78E07A', secret='CKgBvZcvEZgcaOSf9MAoLkQWgPCiM5+uYL7AupVQ')
+
+# Test Locally
+# shiny::runApp()
+
+# Deploy
+# rsconnect::deployApp(appName = "Self-Medication-Predictor")

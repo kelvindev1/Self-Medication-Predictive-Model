@@ -1,0 +1,10 @@
+name: Self-Medication-Predictor
+title:
+username: kelvin-dev1
+account: kelvin-dev1
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16123980
+bundleId: 11206108
+url: https://kelvin-dev1.shinyapps.io/Self-Medication-Predictor/
+version: 1
